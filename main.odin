@@ -5,6 +5,77 @@ import "core:math"
 
 SIZE :: 8
 
+
+print_matrix :: proc(matx: [SIZE][SIZE]int) {
+	for row in matx {
+		for elem in row {
+			fmt.printf("%d ", elem)
+		}
+		fmt.println()
+	}
+	fmt.println()
+}
+
+multiply_matrices :: proc(mat1, mat2, result: ^[SIZE][SIZE]int) {
+	for i in 0 ..< SIZE {
+		for j in 0 ..< SIZE {
+			result[i][j] = 0
+			for k in 0 ..< SIZE {
+				result[i][j] |= mat1[i][k] & mat2[k][j]
+			}
+		}
+	}
+}
+
+flattenMatrix :: proc(matx: [SIZE][SIZE]int) -> u64 {
+	flat: u64
+	for i in 0 ..< SIZE {
+		for j in 0 ..< SIZE {
+			i := u32(i)
+			j := u32(j)
+			// Set the bit at position (i * 8 + j) to the value of matrix[i][j]
+			if matx[i][j] == 1 {
+				flat |= (1 << ((7 - i) * 8 + (7 - j)))
+			}
+		}
+	}
+	return flat
+}
+
+unflattenMatrix :: proc(flat: u64) -> [SIZE][SIZE]int {
+	matx: [SIZE][SIZE]int
+
+	for i in 0 ..< SIZE {
+		for j in 0 ..< SIZE {
+			i := u32(i)
+			j := u32(j)
+			// Extract the bit at position (i * 8 + j)
+			bitPos := ((7 - i) * 8 + (7 - j))
+			if (flat & (1 << bitPos)) != 0 {
+				matx[i][j] = 1
+			} else {
+				matx[i][j] = 0
+			}
+		}
+	}
+
+	return matx
+}
+
+
+printBinaryGrid :: proc(n: u64) {
+
+	binaryStr := fmt.tprintf("%064b", n)
+	for i in 0 ..< SIZE {
+		for j in 0 ..< SIZE {
+
+			fmt.printf("%c ", binaryStr[i * 8 + j])
+		}
+		fmt.println()
+	}
+	fmt.println()
+}
+
 reverseBits :: proc(n: u64) -> u64 {
 	n := n
 	newN: u64 = 0
